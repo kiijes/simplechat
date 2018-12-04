@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Enter chat</title>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+    
+        $(document).ready(function() {
+            var socket = io.connect('http://localhost:3010');
+
+            $('#name').focus();
+
+            $('#enterName').submit(function() {
+                socket.emit('name entered', $('#name').val());
+                document.title = 'LCL Chat';
+                $('#enterName').css('display', 'none');
+                $('#enterName').css('z-index', '-1');
+                $('#msg').focus();
+                return false;
+            });
+
+            $('#messageForm').submit(function() {
+                socket.emit('message', $('#msg').val());
+                $('#msg').val('');
+                return false;
+            });
+
+            socket.on("message to all", function(msg) {
+                $('#container').append("<p>" + msg + "</p>");
+                $('#container').scrollTop($('#container')[0].scrollHeight);
+            });
+
+            socket.on("msg log", function(msg) {
+                $('#container').append("<p>" + msg + "</p>");
+                $('#container').scrollTop($('#container')[0].scrollHeight);
+            });
+        });
+        
+    </script>
+    <style>
+        html, body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            justify-items: stretch;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            background-color: wheat;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            align-items: center;
+            flex-grow: 2;
+        }
+        p {
+            padding: 10px 0px 10px 10px;
+            width: 100%;
+            word-wrap: break-word;
+            margin: 0;
+        }
+        p:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        #enterName {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            background-color: wheat;
+            justify-content: center;
+            align-items: center;
+        }
+        #messageForm {
+            background-color: black;
+            color: white;
+            display: flex;
+            margin: 0;
+            width: 100vw;
+        }
+        #msg {
+            width: 90vw;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <form id="enterName" action="">
+            <label for="name">Enter name: </label>
+            <input type="text" maxlength="15" id="name" required><button>Enter chat</button>
+    </form>
+
+    <div id="container"></div>
+
+    <form action="" id="messageForm">
+        <input type="text" maxlength="100" id="msg" autocomplete="off"><button>Send</button>
+    </form>
+</body>
+</html>
