@@ -46,10 +46,11 @@
             });
 
             $('#messageForm').submit(function() {
-                if (!postingEnabled) {
+                var msg = $('#msg').val();
+                if (!postingEnabled || msg.length > 1880) {
                     return false;
                 }
-                socket.emit('message', $('#msg').val());
+                socket.emit('message', msg);
                 $('#msg').val('');
                 return false;
             });
@@ -148,7 +149,7 @@
     <div id="container"></div>
 
     <form action="" id="messageForm">
-        <input type="text" maxlength="100" id="msg" autocomplete="off" disabled required><button disabled>Send</button>
+        <input type="text" maxlength="1880" id="msg" autocomplete="off" disabled required><button disabled>Send</button>
     </form>
 </body>
 </html>

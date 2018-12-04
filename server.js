@@ -74,7 +74,10 @@ io.on('connection', function(socket) {
 
     socket.on('message', function(msg) {
         msg = striptags(msg);
-        var str = '<p>' + user.name + ': ' + msg + '</p>';
+        if (msg.length > 1880) {
+            return false;
+        }
+        var str = '<p><strong>' + user.name + '</strong>: ' + msg + '</p>';
         logMessage(str);
         io.emit('message to all', str);
     });
