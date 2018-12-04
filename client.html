@@ -13,6 +13,7 @@
         $(document).ready(function() {
             var socket = io.connect('http://localhost:3010');
             var postingEnabled = false;
+
             socket.on('first conn', function() {
                 $('#msg').attr('disabled', 'disabled');
                 $('#messageForm > button').attr('disabled', 'disabled');
@@ -54,16 +55,16 @@
             });
             
             socket.on('join message', function(msg) {
-                $('#container').append("<p><strong>" + msg + "</strong></p>");
+                $('#container').append(msg);
             });
 
-            socket.on("message to all", function(msg) {
-                $('#container').append("<p>" + msg + "</p>");
+            socket.on('message to all', function(msg) {
+                $('#container').append(msg);
                 $('#container').scrollTop($('#container')[0].scrollHeight);
             });
 
-            socket.on("msg log", function(msg) {
-                $('#container').append("<p>" + msg + "</p>");
+            socket.on('msg log', function(msg) {
+                $('#container').append(msg);
                 $('#container').scrollTop($('#container')[0].scrollHeight);
             });
         });

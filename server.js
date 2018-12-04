@@ -2,6 +2,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
+var striptags = require('striptags');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var log = [];
@@ -32,7 +33,9 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', function() {
         console.log('user disconnected');
-        socket.emit('disc');
+        var str = '<p><strong>' + user.name + ' has disconnected</strong></p>';
+        logMessage(str);
+        io.emit('join message', str);
     });
 
     socket.on('name entered', function(name) {
@@ -52,14 +55,15 @@ io.on('connection', function(socket) {
         users.push(name);
 
         socket.emit('valid name');
-        var str = user.name + ' has joined the chat';
+        var str = '<p><strong>' + user.name + ' has joined the chat' + '</strong></p>';
         logMessage(str);
         io.emit('join message', str);
         
     });
 
     socket.on('message', function(msg) {
-        var str = user.name + ': ' + msg;
+        msg = striptags(msg);
+        var str = '<p>' + user.name + ': ' + msg + '</p>';
         logMessage(str);
         io.emit('message to all', str);
     });
