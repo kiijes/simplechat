@@ -20,7 +20,7 @@
                 return false;
             });
 
-            socket.on('valid name', function() {
+            socket.on('valid name', function(name) {
                 document.title = 'LCL Chat';
                 $('#enterName').css('display', 'none');
                 $('#enterName').css('z-index', '-1');
@@ -35,6 +35,10 @@
                 socket.emit('message', $('#msg').val());
                 $('#msg').val('');
                 return false;
+            });
+            
+            socket.on('join message', function(msg) {
+                $('#container').append("<p><strong>" + msg + "</strong></p>");
             });
 
             socket.on("message to all", function(msg) {
@@ -67,13 +71,13 @@
             align-items: center;
             flex-grow: 2;
         }
-        #content p {
+        #container p {
             padding: 10px 0px 10px 10px;
             width: 100%;
             word-wrap: break-word;
             margin: 0;
         }
-        #content p:nth-child(even) {
+        #container p:nth-child(even) {
             background-color: rgba(0, 0, 0, 0.2);
         }
         #enterName {

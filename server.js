@@ -41,7 +41,7 @@ io.on('connection', function(socket) {
         }
 
         console.log('emitting valid name');
-        socket.emit('valid name');
+
         user.name = name;
         users.push(name);
         if (log.length > 0) {
@@ -49,6 +49,12 @@ io.on('connection', function(socket) {
                 socket.emit('msg log', log[i]);
             }
         }
+
+        socket.emit('valid name');
+        var str = user.name + ' has joined the chat';
+        logMessage(str);
+        io.emit('join message', str);
+        
     });
 
     socket.on('message', function(msg) {
