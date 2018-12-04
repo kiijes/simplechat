@@ -77,7 +77,8 @@ io.on('connection', function(socket) {
         if (msg.length > 1880) {
             return false;
         }
-        var str = '<p><strong>' + user.name + '</strong>: ' + msg + '</p>';
+        var msgDate = new Date(Date.now());
+        var str = '<p><small>' + msgDate.toTimeString().slice(0, 8) + '</small> - <strong>' + user.name + '</strong>: ' + msg + '</p>';
         logMessage(str);
         io.emit('message to all', str);
     });
