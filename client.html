@@ -47,7 +47,8 @@
 
             $('#messageForm').submit(function() {
                 var msg = $('#msg').val();
-                if (!postingEnabled || msg.length > 1880) {
+                msg = msg.trim();
+                if (!postingEnabled || msg.length > 1880 || msg === '' || msg === null) {
                     return false;
                 }
                 socket.emit('message', msg);
