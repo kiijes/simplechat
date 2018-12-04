@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var log = [];
+var users = [];
 
 http.listen(3010, function() {
     console.log('listening on *:3010');
@@ -29,7 +30,20 @@ io.on('connection', function(socket) {
     });
 
     socket.on('name entered', function(name) {
+        var nameIsGood = checkName(name);
+
+        if (users.length > 0) {
+            if (nameIsGood === false) {
+                console.log('emitting invalid name');
+                socket.emit('invalid name', 'Name is already taken');
+                return;
+            }
+        }
+
+        console.log('emitting valid name');
+        socket.emit('valid name');
         user.name = name;
+        users.push(name);
         if (log.length > 0) {
             for (var i = 0; i < log.length; i++) {
                 socket.emit('msg log', log[i]);
@@ -46,4 +60,14 @@ io.on('connection', function(socket) {
 
 function logMessage(msg) {
     log.push(msg);
+}
+
+function checkName(name) {
+    for (var i = 0; i < users.length; i++) {
+        if (name === users[i]) {
+            console.log('bad name');
+            return false;
+        }
+    }
+    return true;
 }
