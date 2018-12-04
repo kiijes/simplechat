@@ -33,9 +33,20 @@ io.on('connection', function(socket) {
 
     socket.on('disconnect', function() {
         console.log('user disconnected');
+        if (user.name === null) {
+            return;
+        }
+
         var str = '<p><strong>' + user.name + ' has disconnected</strong></p>';
         logMessage(str);
         io.emit('join message', str);
+
+        for (let i = 0; i < users.length; i++) {
+            if (user.name === users[i]) {
+                users.splice(i, 1);
+                return;
+            }
+        }
     });
 
     socket.on('name entered', function(name) {
