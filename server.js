@@ -17,16 +17,22 @@ app.get('/', function(req, res) {
 
 io.on('connection', function(socket) {
     console.log('user connected');
+
+    socket.emit('first conn');
+
     var user = {
         name: null
     };
     
     if (log.length > 0) {
-        console.log('log not empty');
+        for (var i = 0; i < log.length; i++) {
+            socket.emit('msg log', log[i]);
+        }
     }
 
     socket.on('disconnect', function() {
         console.log('user disconnected');
+        socket.emit('disc');
     });
 
     socket.on('name entered', function(name) {
@@ -44,11 +50,6 @@ io.on('connection', function(socket) {
 
         user.name = name;
         users.push(name);
-        if (log.length > 0) {
-            for (var i = 0; i < log.length; i++) {
-                socket.emit('msg log', log[i]);
-            }
-        }
 
         socket.emit('valid name');
         var str = user.name + ' has joined the chat';

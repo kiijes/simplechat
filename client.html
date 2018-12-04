@@ -12,6 +12,11 @@
     
         $(document).ready(function() {
             var socket = io.connect('http://localhost:3010');
+            var postingEnabled = false;
+            socket.on('first conn', function() {
+                $('#msg').attr('disabled', 'disabled');
+                $('#messageForm > button').attr('disabled', 'disabled');
+            });
 
             $('#name').focus();
 
@@ -20,10 +25,18 @@
                 return false;
             });
 
+            socket.on('disc', function() {
+                postingEnabled = false;
+            });
+
             socket.on('valid name', function(name) {
+                $('#name').val('');
                 document.title = 'LCL Chat';
                 $('#enterName').css('display', 'none');
                 $('#enterName').css('z-index', '-1');
+                $('#msg').removeAttr('disabled');
+                $('#messageForm > button').removeAttr('disabled');
+                postingEnabled = true;
                 $('#msg').focus();
             });
 
@@ -32,6 +45,9 @@
             });
 
             $('#messageForm').submit(function() {
+                if (!postingEnabled) {
+                    return false;
+                }
                 socket.emit('message', $('#msg').val());
                 $('#msg').val('');
                 return false;
@@ -88,7 +104,7 @@
             width: 100vw;
             height: 100vh;
             z-index: 1;
-            background-color: wheat;
+            background-color: rgba(0, 0, 0, 0.3);
             justify-content: center;
             align-items: center;
         }
@@ -112,11 +128,15 @@
         #error {
             color: rgb(200, 0, 0)
         }
+        #formContent {
+            padding: 5%;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
     <form id="enterName" action="">
-        <div>
+        <div id="formContent">
             <label for="name">Enter name: </label>
             <input type="text" maxlength="15" id="name" required>
             <button>Enter chat</button>
@@ -127,7 +147,7 @@
     <div id="container"></div>
 
     <form action="" id="messageForm">
-        <input type="text" maxlength="100" id="msg" autocomplete="off"><button>Send</button>
+        <input type="text" maxlength="100" id="msg" autocomplete="off" disabled required><button disabled>Send</button>
     </form>
 </body>
 </html>
