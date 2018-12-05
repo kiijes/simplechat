@@ -81,6 +81,23 @@ io.on('connection', function(socket) {
         var str = '<p><small>' + msgDate.toTimeString().slice(0, 8) + '</small> - <strong>' + user.name + '</strong>: ' + msg + '</p>';
         logMessage(str);
         io.emit('message to all', str);
+
+        var checkObject = checkEmbed(msg);
+
+        switch (checkObject.type) {
+            case 'youtube':
+                var ytEmbed = '<div class="messageDiv"><iframe width="560" height="315" src="https://www.youtube.com/embed/' + checkObject.id + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+                io.emit('message to all', ytEmbed);
+                break;
+
+            case 'image':
+                var imgEmbed = '<div class="messageDiv"><img class="chatimg" src="' + msg + '"></div>';
+                io.emit('message to all', imgEmbed);
+                break;
+        
+            default:
+                break;
+        }
     });
 });
 
@@ -96,4 +113,31 @@ function checkName(name) {
         }
     }
     return true;
+}
+
+function checkEmbed(msg) {
+    ytRegEx = /^http[s]*:\/\/(youtu\.be\/|(www\.)*youtube\.com\/(watch\?v=|(embed|v)\/))([a-zA-Z0-9-_]{11})$/;
+    imgRegEx = /^(http[s]*:\/\/)?(www\.)?[a-zA-Z0-9.\-]+\.[a-z]+[A-Za-z0-9_.~\-!*'();:@&=+$,/?#\[\]]+(\.(png|PNG|jpg|JPG|jpeg|JPEG|gif|GIF))+$/;
+
+    var ytMatch = msg.match(ytRegEx);
+    var imgMatch = msg.match(imgRegEx);
+
+    if (ytMatch !== null && msg.length === ytMatch[0].length) {
+        console.log('yt link matched');
+        return { 
+            'type': 'youtube',
+            'id': ytMatch[ytMatch.length-1]
+        }
+    }
+
+    if (imgMatch !== null && msg.length === imgMatch[0].length) {
+        console.log('image matched');
+        return {
+            'type': 'image'
+        }
+    }
+
+    return {
+        'type': ''
+    }
 }
