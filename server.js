@@ -52,12 +52,11 @@ io.on('connection', function(socket) {
     socket.on('name entered', function(name) {
         var nameIsGood = checkName(name);
 
-        if (users.length > 0) {
-            if (nameIsGood === false) {
-                console.log('emitting invalid name');
-                socket.emit('invalid name', 'Name is already taken');
-                return;
-            }
+        if (nameIsGood.check === false) {
+            console.log('emitting invalid name');
+            console.log(nameIsGood.error);
+            socket.emit('invalid name', nameIsGood.error);
+            return;
         }
 
         console.log('emitting valid name');
@@ -106,13 +105,32 @@ function logMessage(msg) {
 }
 
 function checkName(name) {
-    for (var i = 0; i < users.length; i++) {
-        if (name === users[i]) {
-            console.log('bad name');
-            return false;
+    var nameRegExp = /^[a-zA-Z0-9_-]{3,15}$/
+    var nameMatch = name.match(nameRegExp);
+    
+    if (nameMatch === null) {
+        return { 
+            'check': false,
+            'error': 'Name needs to be min 3 and max 15 characters and can only contain alphanumerics and _ or -'
         }
     }
-    return true;
+
+    if (users.length > 0) {
+        for (var i = 0; i < users.length; i++) {
+            if (name === users[i]) {
+                console.log('bad name');
+                return { 
+                    'check': false,
+                    'error': 'Name is already taken'
+                }
+            }
+        }
+    }
+
+    return { 
+        'check': true,
+        'error': 'Name is valid'
+    }
 }
 
 function checkEmbed(msg) {

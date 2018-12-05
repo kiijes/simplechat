@@ -22,7 +22,9 @@
             $('#name').focus();
 
             $('#enterName').submit(function() {
-                socket.emit('name entered', $('#name').val());
+                name = $('#name').val();
+                name = name.trim();
+                socket.emit('name entered', name);
                 return false;
             });
 
@@ -154,7 +156,7 @@
     <form id="enterName" action="">
         <div id="formContent">
             <label for="name">Enter name: </label>
-            <input type="text" maxlength="15" id="name" required>
+            <input type="text" maxlength="15" minlength="3" id="name" required>
             <button>Enter chat</button>
             <p id="error"></p>
         </div>
